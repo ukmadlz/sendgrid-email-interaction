@@ -11,6 +11,14 @@ var SENDGRID = JSON.parse(process.env.SENDGRID);
 var Hapi = require('hapi');
 var Cloudant = require('cloudant');
 var emailjs = require('emailjs');
+var request = require('request');
+var Pusher = require('pusher');
+
+var pusher = new Pusher({
+  appId: '141471',
+  key: '0c14468a7026fcb6895b',
+  secret: '8f7490ee1930c36495a8'
+});
 
 var server = new Hapi.Server({ debug: { request: ['error'] } });
 
@@ -40,6 +48,8 @@ server.route({
       console.log(json);
     });
 
+    pusher.trigger('channel-1', 'interaction-event', { type: "email", message: "Quiz Email" });
+
     var dbName = req.query.email.replace(/[^0-9A-Za-z]+/g, '_').toLowerCase();
     Cloudant({account:vcapServices.cloudantNoSQLDB[0].credentials.username, password:vcapServices.cloudantNoSQLDB[0].credentials.password}, function(er, cloudant) {
       cloudant.db.create(dbName, function(err, body) {
@@ -47,7 +57,7 @@ server.route({
         if(err)
           console.log(err);
 
-        var database = cloudant.db.use(twitterHandle);
+        var database = cloudant.db.use(dbName);
 
         database.get('_design/lookups', function(err, body) {
           if (!err)
@@ -88,6 +98,18 @@ server.route({
   handler: function(req, reply) {
     var dbName = req.query.email.replace(/[^0-9A-Za-z]+/g, '_').toLowerCase();
     Cloudant({account:vcapServices.cloudantNoSQLDB[0].credentials.username, password:vcapServices.cloudantNoSQLDB[0].credentials.password}, function(er, cloudant) {
+
+      if(req.query.type=='flic') {
+        pusher.trigger('channel-1', 'interaction-event', { type: "flic", message: "Button pressed." });
+      }
+
+      request.post({
+        url:     'http://battlehack.curtish.me/twilio/trigger'
+      }, function(error, response, body){
+        if (error) console.log(error)
+        pusher.trigger('channel-1', 'interaction-event', { type: "twilio", message: "Text message sent." });
+      });
+
       var database = cloudant.db.use(dbName);
 
       var d = new Date();
@@ -97,6 +119,7 @@ server.route({
         score: 25,
         reqType: req.query.type
       },function(err,body){
+        if (err) console.log(err);
         reply({message:"How can we help?"});
       });
     });
