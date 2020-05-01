@@ -1,0 +1,22 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - cloudant > async > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - pusher > request > form-data > async > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - sendgrid > smtpapi > esdoc > babel-generator > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - sendgrid > smtpapi > esdoc > babel-traverse > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - sendgrid > smtpapi > esdoc > cheerio > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - sendgrid > smtpapi > esdoc > babel-generator > babel-types > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - sendgrid > smtpapi > esdoc > babel-traverse > babel-types > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
+    - sendgrid > smtpapi > esdoc > ice-cap > cheerio > lodash:
+        patched: '2020-05-01T04:01:31.291Z'
